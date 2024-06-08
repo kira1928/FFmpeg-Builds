@@ -72,11 +72,17 @@ jobs:
         " > configure_script.sh
         chmod +x ./configure_script.sh
 
-    - name: Install dependencies
+    - name: Install dependencies linux-x64
       if: matrix.target == 'linux-x64'
       run: |
         sudo apt update
         sudo apt install nasm
+
+    - name: Install dependencies windows-x64
+      if: matrix.target == 'windows-x64'
+      run: |
+        sudo apt update
+        sudo apt install mingw-w64
 
     - name: Build macos-arm64
       if: matrix.target == 'macos-arm64' || matrix.target == 'macos-x64'
