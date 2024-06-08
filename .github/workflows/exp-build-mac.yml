@@ -82,7 +82,7 @@ jobs:
       if: matrix.target == 'windows-x64'
       run: |
         sudo apt update
-        sudo apt install mingw-w64
+        sudo apt install mingw-w64 nasm
 
     - name: Build macos-arm64
       if: matrix.target == 'macos-arm64' || matrix.target == 'macos-x64'
