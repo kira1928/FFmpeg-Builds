@@ -22,7 +22,7 @@ jobs:
           - os: ubuntu-latest
             target: linux-x64
             configure_args: --enable-pthreads
-          - os: macos-arm64
+          - os: windows-latest
             target: windows-x64
             configure_args: --enable-w32threads
           - os: ubuntu-latest
@@ -77,6 +77,11 @@ jobs:
       run: |
         sudo apt update
         sudo apt install nasm
+
+    - name: Build macos-arm64
+      if: matrix.target == 'macos-arm64' || matrix.target == 'macos-x64'
+      run: |
+        brew install nasm
 
     - name: Build linux-arm64
       if: matrix.target == 'linux-arm64'
