@@ -72,6 +72,12 @@ jobs:
         " > configure_script.sh
         chmod +x ./configure_script.sh
 
+    - name: Install dependencies
+      if: matrix.os == 'linux-x64'
+      run: |
+        sudo apt update
+        sudo apt install nasm
+
     - name: Build linux-arm64
       if: matrix.target == 'linux-arm64'
       run: |
