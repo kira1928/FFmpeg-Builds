@@ -9,7 +9,25 @@ env:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-14
+            target: macos-arm64
+            configure_args: --enable-pthreads --enable-neon
+          - os: macos-13
+            target: macos-x64
+            configure_args: --enable-pthreads
+          - os: ubuntu-latest
+            target: linux-x64
+            configure_args: --enable-pthreads
+          - os: macos-arm64
+            target: windows-x64
+            configure_args: --enable-w32threads
+          - os: ubuntu-latest
+            target: linux-arm64
+            configure_args: --enable-pthreads --enable-neon
 
     steps:
     - name: Checkout
@@ -18,8 +36,9 @@ jobs:
         repository: kira1928/FFmpeg
         ref: ${{ env.GIT_BRANCH }}
 
-    - name: Build
+    - name: Prepare build script
       run: |
+        echo "
         ./configure \
           --disable-everything \
           --disable-autodetect \
@@ -48,15 +67,27 @@ jobs:
           --disable-programs \
           --enable-ffmpeg \
           --enable-small \
-          --arch=arm64 \
+          ${{ matrix.configure_args }} \
           --pkg-config=pkg-config
-        make
+        " > configure_script.sh
+        chmod +x ./configure_script.sh
 
-    - name: Check FFmpeg version
-      run: ./ffmpeg -version
+    - name: Build linux-arm64
+      if: matrix.target == 'linux-arm64'
+      run: |
+        docker run --rm dockcross/linux-arm64 > ./dockcross-linux-arm64
+        chmod +x ./dockcross-linux-arm64
+        ./dockcross-linux-arm64 ./configure_script.sh
+        ./dockcross-linux-arm64 make
+
+    - name: Build general
+      if: matrix.target != 'linux-arm64'
+      run: |
+        ./configure_script.sh
+        make
 
     - name: Upload FFmpeg as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ffmpeg
+        name: ${{ matrix.target }}-ffmpeg
         path: ./ffmpeg
