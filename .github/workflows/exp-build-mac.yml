@@ -1,0 +1,62 @@
+name: Build FFmpeg
+
+on:
+  workflow_dispatch:
+
+env:
+  FFMPEG_REPO: https://github.com/kira1928/FFmpeg
+  GIT_BRANCH: develop
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: kira1928/FFmpeg
+        ref: ${{ env.GIT_BRANCH }}
+
+    - name: Build
+      run: |
+        ./configuration \
+          --disable-everything \
+          --disable-autodetect \
+          --disable-encoders \
+          --disable-decoders \
+          --enable-decoder='h264,aac' \
+          --enable-encoder=aac \
+          --enable-parser='h264,aac,mp3' \
+          --enable-demuxer='flv,h264,aac,mp3,live_flv' \
+          --enable-muxer='flv,mp4' \
+          --enable-protocol='file,pipe' \
+          --enable-bsf='h264_mp4toannexb,aac_adtstoasc' \
+          --disable-avdevice \
+          --disable-swscale \
+          --disable-postproc \
+          --disable-doc \
+          --disable-runtime-cpudetect \
+          --disable-network \
+          --enable-pthreads \
+          --enable-gpl \
+          --enable-version3 \
+          --enable-avcodec \
+          --enable-avformat \
+          --enable-swresample \
+          --enable-avfilter \
+          --disable-programs \
+          --enable-ffmpeg \
+          --enable-small \
+          --arch=arm64 \
+          --pkg-config=pkg-config
+        make
+
+    - name: Check FFmpeg version
+      run: ffmpeg -version
+
+    - name: Upload FFmpeg as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ffmpeg
+        path: ./ffmpeg
