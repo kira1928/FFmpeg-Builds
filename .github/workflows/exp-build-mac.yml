@@ -22,9 +22,9 @@ jobs:
           - os: ubuntu-latest
             target: linux-x64
             configure_args: --enable-pthreads
-          - os: windows-latest
+          - os: ubuntu-latest
             target: windows-x64
-            configure_args: --enable-w32threads
+            configure_args: --enable-w32threads --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32- --arch=x86_64
           - os: ubuntu-latest
             target: linux-arm64
             configure_args: --enable-pthreads --enable-neon
