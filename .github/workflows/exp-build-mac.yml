@@ -53,7 +53,7 @@ jobs:
         make
 
     - name: Check FFmpeg version
-      run: ffmpeg -version
+      run: ./ffmpeg -version
 
     - name: Upload FFmpeg as artifact
       uses: actions/upload-artifact@v4
