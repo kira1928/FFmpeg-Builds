@@ -1,4 +1,4 @@
-name: Build FFmpeg
+name: Build FFmpeg for MacOS
 
 on:
   workflow_dispatch:
