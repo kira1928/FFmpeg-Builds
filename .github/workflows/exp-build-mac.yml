@@ -73,7 +73,7 @@ jobs:
         chmod +x ./configure_script.sh
 
     - name: Install dependencies
-      if: matrix.os == 'linux-x64'
+      if: matrix.target == 'linux-x64'
       run: |
         sudo apt update
         sudo apt install nasm
